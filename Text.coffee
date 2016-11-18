@@ -12,6 +12,9 @@ class exports.Text
 	@NO_OVERFLOW = NO_OVERFLOW = overflow:     "hidden"
 	@INLINE      = INLINE      = display:      "inline"
 	@BLOCK       = BLOCK       = display:      "block"
+	@BOX         = BOX         = display:      "-webkit-box"
+	@ORIENT      = ORIENT      = "-webkit-box-orient": "vertical"
+	@CLAMP       = CLAMP       = "-webkit-line-clamp"
 
   ####################################################################################################
 	# CLASS METHODS
@@ -32,8 +35,7 @@ class exports.Text
 			# Check Type to see if layer or should apply to first child
 			ellipsisProperties = _.extend( {}, NO_WRAP, ELLIPSIS, NO_OVERFLOW )
 			return ellipsisProperties unless layer?
-			for property, value of ellipsisProperties
-				layer._element.children[0].style[property] = value
+			layer._element.children[0].style[property] = value for property, value of ellipsisProperties
 
 	@enableInline = (layer) ->
 		return INLINE unless layer?
@@ -45,18 +47,11 @@ class exports.Text
 		layer._element.children[0].style[property] = value for property, value of BLOCK
 		return
 
-	@enableEllipsisLineClamp = (layer, lineCount) ->
-		print "Not enabled yet"
+	@enableEllipsisLineClamp = (layer, lineCount=2) ->
 		# https://css-tricks.com/line-clampin/#article-header-id-0
-	    # 	  display: -webkit-box;
-      # -webkit-line-clamp: 3;
-      # -webkit-box-orient: vertical;
-			# Check Type to see if layer or should apply to first child
-			# ellipsisProperties = _.extend( {}, NO_WRAP, ELLIPSIS, NO_OVERFLOW )
-			# return ellipsisProperties unless layer?
-			# for property, value of ellipsisProperties
-			# 	layer._element.children[0].style[property] = value
-			# layer.style = ellipsisProperties
+		lineClampProperties = _.extend( {}, ELLIPSIS, NO_OVERFLOW, BOX, ORIENT, {"#{CLAMP}": lineCount} )
+		return lineClampProperties unless layer?
+		layer._element.children[0].style[property] = value for property, value of lineClampProperties
 
 	@intrinsicHeight = (layer, setHeight) ->
 		return unless layer
@@ -71,15 +66,3 @@ class exports.Text
 		width = layer._element.children[0].offsetWidth
 		Text.enableBlock layer
 		return width
-
-  ####################################################################################################
-	# HELPERS
-	# merge = (options, overrides...) ->
-	# 	mergedObject = options
-	# 	for override in overrides
-  # 		mergedObject = extend (extend {}, mergedObject), override
-	# 	mergedObject
-	#
-	# extend = (object, properties) ->
-	#   object[key] = val for key, val of properties
-	#   object
